@@ -26,6 +26,10 @@ public class App {
         SchedulerBo sbo = (SchedulerBo)ctx.getBean("schedulerBo");
         sbo.printMsg();
         CustomerBo cbo = (CustomerBo)ctx.getBean("customerBo");
+        cbo.setMessage("cbo 1");
         cbo.printMsg();
+        CustomerBo cbo2 = (CustomerBo)ctx.getBean("customerBo");
+        cbo2.printMsg();
+
     }
 }
