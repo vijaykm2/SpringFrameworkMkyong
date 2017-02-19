@@ -12,6 +12,7 @@ import org.springframework.context.annotation.CommonAnnotationBeanPostProcessor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
@@ -56,10 +57,17 @@ public class CustomerConfig {
         return new CustomerBo();
     }
 
+    @Bean(name = "jdbcTemplate")
+    public JdbcTemplate jdbcTemplate(@Value("#{dataSource}") DataSource dataSource){
+        return new JdbcTemplate(dataSource);
+    }
+
     @Bean(name="jdbcCustomerDao")
-    public CustomerDao customerDao(@Value("#{dataSource}") DataSource dataSource){
+    public CustomerDao customerDao(@Value("#{dataSource}") DataSource dataSource,
+                                   @Value("#{jdbcTemplate}") JdbcTemplate jdbcTemplate){
         JDBCCustomerDao customerDao =new JDBCCustomerDao();
         customerDao.setDataSource(dataSource );
+        customerDao.setJdbcTemplate(jdbcTemplate);
         return customerDao;
 
     }
