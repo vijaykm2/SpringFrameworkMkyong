@@ -36,8 +36,6 @@ public class AppConfig {
         return propertyPlaceholderConfigurer;
     }
 
-
-
     @Bean(name = "helloWorld")
     public HelloWorld helloWorld(){
         return new HelloWorld();
