@@ -1,15 +1,32 @@
 package com.model;
 
+import org.hibernate.annotations.Type;
+
+import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
  * Created by vijay on 2/19/17.
  */
+@Entity
+@Table(name = "customer")
 public class Customer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CUST_ID")
     private long custId;
+
+    @Column(name = "NAME")
     private String name;
+
+    @Column(name = "AGE")
     private int age;
+
+    @Column(name = "INSERT_TIME")
+    //@Temporal(TemporalType.TIMESTAMP)
+    private ZonedDateTime insertionTime ;
 
     @Override
     public String toString() {
@@ -29,11 +46,9 @@ public class Customer {
         this.insertionTime = insertionTime;
     }
 
-    private ZonedDateTime insertionTime ;
-
     public Customer(){}
     public Customer(long id, String name, int age, ZonedDateTime time){
-        this.custId = id;
+        //this.custId = id;
         this.name = name;
         this.age = age;
         this.insertionTime = time;

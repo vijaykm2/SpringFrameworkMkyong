@@ -1,6 +1,7 @@
 package com.dao;
 
 import com.model.Customer;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -99,6 +100,26 @@ public class JDBCCustomerDao implements CustomerDao{
             //Customer c  = (Customer) jdbcTemplate.queryForList(sql, new Object[]{name}, new CustomerRowMapper());
             return c.get(0);
         }
+    }
+
+    public void performBatchUpdate(List<Customer> customers){
+        String sql = " INSERT INTO customer ( NAME, AGE, INSERT_TIME) VALUES (?, ?, ?)";
+        jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
+                Customer customer = customers.get(i);
+                preparedStatement.setString(1, customer.getName());
+                preparedStatement.setInt(2, customer.getAge());
+                preparedStatement.setTimestamp( 3, Timestamp.from(customer.getInsertionTime().toInstant()));
+
+            }
+
+            @Override
+            public int getBatchSize() {
+                return customers.size();
+            }
+        });
+
     }
 
     @PostConstruct

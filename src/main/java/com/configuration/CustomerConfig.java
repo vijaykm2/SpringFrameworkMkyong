@@ -2,8 +2,11 @@ package com.configuration;
 
 import com.CustomerBo;
 import com.dao.CustomerDao;
+import com.dao.HibernateCustomerDao;
 import com.dao.JDBCCustomerDao;
+import com.model.Customer;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -14,13 +17,21 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by vijay on 2/18/17.
  */
 @Configuration
+@EnableTransactionManagement
 public class CustomerConfig {
     @Bean
     public PropertyPlaceholderConfigurer propertyPlaceholderConfigurer() {
@@ -63,12 +74,49 @@ public class CustomerConfig {
     }
 
     @Bean(name="jdbcCustomerDao")
-    public CustomerDao customerDao(@Value("#{dataSource}") DataSource dataSource,
+    public CustomerDao jdbcCustomerDao(@Value("#{dataSource}") DataSource dataSource,
                                    @Value("#{jdbcTemplate}") JdbcTemplate jdbcTemplate){
         JDBCCustomerDao customerDao =new JDBCCustomerDao();
         customerDao.setDataSource(dataSource );
         customerDao.setJdbcTemplate(jdbcTemplate);
         return customerDao;
 
+    }
+
+    @Bean(name="sessionFactory")
+    public SessionFactory sessionFactory(@Value("#{dataSource}") DataSource dataSource,
+                                         @Value("${hibernate.show_sql}") String showSql,
+                                         @Value("${hibernate.dialect}") String dialect,
+                                         @Value("${hibernate.format_sql}") String formatSql){
+        LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
+        LocalSessionFactoryBuilder sessionBuilder = new LocalSessionFactoryBuilder(dataSource);
+        //sessionBuilder.setDataSource(dataSource);
+        sessionBuilder.addAnnotatedClasses(Customer.class);
+        Properties hibernateProperties = new Properties();
+        hibernateProperties.put("hibernate.dialect", dialect);
+        hibernateProperties.put("hibernate.show_sql", showSql);
+        hibernateProperties.put("hibernate.format_sql", formatSql);
+        //sessionBuilder.a
+        sessionBuilder.addProperties(hibernateProperties);
+        SessionFactory factory = sessionBuilder.buildSessionFactory();
+        return factory;
+    }
+
+    @Bean(name = "transactionManager")
+    public HibernateTransactionManager hibernateTransactionManager(@Value("#{sessionFactory}") SessionFactory sessionFactory){
+        HibernateTransactionManager htm = new HibernateTransactionManager();
+        htm.setSessionFactory(sessionFactory);
+        return htm;
+
+    }
+
+    @Bean(name="hibernateCustomerDao")
+    public CustomerDao hibernateCustomerDao(@Value("#{sessionFactory}")SessionFactory sessionFactory,
+                                   @Value("#{transactionManager}")HibernateTransactionManager htm){
+        HibernateCustomerDao customerDao = new
+                HibernateCustomerDao();
+        customerDao.setSessionFactory(sessionFactory);
+        //customerDao.setTransactionManager(htm);
+        return customerDao;
     }
 }
