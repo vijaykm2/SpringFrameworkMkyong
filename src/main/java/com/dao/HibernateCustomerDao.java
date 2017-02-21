@@ -3,21 +3,9 @@ package com.dao;
 import com.model.Customer;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.TransactionManagementConfigurer;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManagerFactory;
+import javax.annotation.PreDestroy;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by vijay on 2/19/17.
@@ -38,19 +26,19 @@ public class HibernateCustomerDao implements CustomerDao {
 
 
     @Override
-    @Transactional(value = "transactionManager")
     public void insert(Customer customer) {
-        Session session =sessionFactory.openSession();
-        Transaction tx;
+        Session session =sessionFactory.getCurrentSession();
         try{
-            tx = session.beginTransaction();
+            if(customer == null || customer.getAge() == null || customer.getName() == null){
+                throw new Exception("Customer should have name and age ");
+            }
             session.saveOrUpdate(customer);
-            tx.commit();
+
         }catch (Exception e){
             System.out.println(e);
             throw new RuntimeException(e);
         }finally{
-            session.close();
+
         }
 
     }
@@ -69,5 +57,12 @@ public class HibernateCustomerDao implements CustomerDao {
     @Override
     public void performBatchUpdate(List<Customer> customers) {
 
+    }
+
+    @PreDestroy
+    public void destroy() {
+        System.out.println("Closing session factory!!");
+        sessionFactory.getCurrentSession().close();
+        sessionFactory.close();
     }
 }

@@ -22,7 +22,7 @@ public class Customer {
     private String name;
 
     @Column(name = "AGE")
-    private int age;
+    private Integer age;
 
     @Column(name = "INSERT_TIME")
     //@Temporal(TemporalType.TIMESTAMP)
@@ -70,11 +70,11 @@ public class Customer {
         this.name = name;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
     }
 

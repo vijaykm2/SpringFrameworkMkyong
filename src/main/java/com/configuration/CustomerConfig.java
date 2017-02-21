@@ -64,8 +64,10 @@ public class CustomerConfig {
     }
     @Bean(name = "customerBo" )
    // @Scope(value = "prototype")
-    public CustomerBo customerBo(){
-        return new CustomerBo();
+    public CustomerBo customerBo(@Value("#{hibernateCustomerDao}" ) CustomerDao customerDao){
+        CustomerBo customerBo = new CustomerBo();
+        customerBo.setCustomerDao(customerDao);
+        return customerBo;
     }
 
     @Bean(name = "jdbcTemplate")

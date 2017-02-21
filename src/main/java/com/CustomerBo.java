@@ -1,6 +1,9 @@
 package com;
 
+import com.dao.CustomerDao;
+import com.model.Customer;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 
@@ -10,6 +13,15 @@ import javax.annotation.PostConstruct;
 public class CustomerBo {
     public String getMessage() {
         return message;
+    }
+
+    private CustomerDao customerDao;
+    public CustomerDao getCustomerDao() {
+        return customerDao;
+    }
+
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
     }
 
     @Required
@@ -26,4 +38,12 @@ public class CustomerBo {
     public void initIt(){
         System.out.println("Customer bean initialized!! "+ this.getMessage());
     }
+
+    @Transactional
+    public void insert(Customer customer){
+        customerDao.insert(customer);
+    }
+
+
+
 }

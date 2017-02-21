@@ -53,17 +53,18 @@ public class App {
         CustomerBo cbo2 = (CustomerBo)ctx.getBean("customerBo");
         cbo2.printMsg();
         CustomerDao customerDao = (CustomerDao) ctx.getBean("hibernateCustomerDao");
-        customerDao.insert(new Customer(1, "Vijay", 32, ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"))));
+        cbo.insert(new Customer(1, "Vijay", 32, ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"))));
+        cbo.insert(new Customer(1, "als", 32, ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"))));
         Path p = Paths.get("/home/vijay/IdeaProjects/Java8WebApp/note");
         String contents = new String(Files.readAllBytes(new File("note").toPath()), StandardCharsets.UTF_8);
         List<String> words = Arrays.asList(contents.split(" "));
-        Stream wordStream = words.stream().map(w -> w.toLowerCase()).distinct().parallel();
+        Stream wordStream = words.stream().map(w -> w.toLowerCase()).distinct().limit(10000l).parallel();
          start = Instant.now();
          List<Customer> customers = new ArrayList<>();
         wordStream.forEach(word -> {
             String w = (String)word;
             ZonedDateTime insertTime =  ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"));
-            customerDao.insert(new Customer(1l, w, w.length(), insertTime ));
+            cbo.insert(new Customer(1l, w, w.length(), insertTime ));
             //customers.add(new Customer(1l, w, w.length(), insertTime ));
         });
         //customerDao.performBatchUpdate(customers);
@@ -71,6 +72,8 @@ public class App {
         System.out.println("Time to insert all words: "+ Duration.between(start, end).toMillis());
         Customer customer = customerDao.findCustomerById("vijay");
         System.out.println(customer.toString());
+
+        ((ClassPathXmlApplicationContext)ctx).close();
 
 
 
