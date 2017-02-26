@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class App {
+
+    public static Customer buildCustomer(String name, Integer age, ZonedDateTime insertTime){
+        return new Customer.CustomerBuilder().setInsertTime(insertTime).setAge(age).setName(name).build();
+
+    }
     public static void main(String[] args) throws Exception{
         Instant start = Instant.now();
         ApplicationContext ctx = new ClassPathXmlApplicationContext("SpringBeans.xml");
@@ -53,18 +58,18 @@ public class App {
         CustomerBo cbo2 = (CustomerBo)ctx.getBean("customerBo");
         cbo2.printMsg();
         CustomerDao customerDao = (CustomerDao) ctx.getBean("hibernateCustomerDao");
-        cbo.insert(new Customer(1, "Vijay", 32, ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"))));
-        cbo.insert(new Customer(1, "als", 32, ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"))));
+        cbo.insert(buildCustomer( "Vijay", 32, ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"))));
+        cbo.insert(buildCustomer( "als", 32, ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"))));
         Path p = Paths.get("/home/vijay/IdeaProjects/Java8WebApp/note");
         String contents = new String(Files.readAllBytes(new File("note").toPath()), StandardCharsets.UTF_8);
         List<String> words = Arrays.asList(contents.split(" "));
-        Stream wordStream = words.stream().map(w -> w.toLowerCase()).distinct().limit(10000l).parallel();
+        Stream wordStream = words.stream().map(w -> w.toLowerCase()).distinct().limit(1000l).parallel();
          start = Instant.now();
          List<Customer> customers = new ArrayList<>();
         wordStream.forEach(word -> {
             String w = (String)word;
             ZonedDateTime insertTime =  ZonedDateTime.ofInstant(Instant.now(), ZoneId.of("America/Chicago"));
-            cbo.insert(new Customer(1l, w, w.length(), insertTime ));
+            cbo.insert(buildCustomer( w, w.length(), insertTime ));
             //customers.add(new Customer(1l, w, w.length(), insertTime ));
         });
         //customerDao.performBatchUpdate(customers);
@@ -75,8 +80,33 @@ public class App {
 
         ((ClassPathXmlApplicationContext)ctx).close();
 
+        Long sum = 0l;
+        start = Instant.now();
+        for(long i =0; i < Integer.MAX_VALUE; i++){
+            sum += i;
+        }
+        end = Instant.now();
+        System.out.println("sum = "+ sum + " duration = "+ Duration.between(start, end).toMillis() );
 
+        long sum2 = 0l;
+        start = Instant.now();
+        for(long i =0; i < Integer.MAX_VALUE; i++){
+            sum2 += i;
+        }
+        end = Instant.now();
+        System.out.println("sum = "+ sum2 + " duration = "+ Duration.between(start, end).toMillis() );
 
+        long sum3 = 0l;
+        start = Instant.now();
 
+        long intMax = Integer.MAX_VALUE-1;
+       sum3 = intMax * (intMax +1l)/2;
+        end = Instant.now();
+        System.out.println("sum = "+ sum3 + " duration = "+ Duration.between(start, end).toMillis() );
+
+        System.out.println(sum.hashCode());
+        System.out.println(Long.valueOf(sum2).hashCode());
+        System.out.println(Long.valueOf(sum3).hashCode());
+        System.out.println(Long.valueOf(sum2).equals(Long.valueOf(sum3)));
     }
 }

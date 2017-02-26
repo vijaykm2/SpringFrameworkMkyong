@@ -20,11 +20,10 @@ import java.util.List;
 class CustomerRowMapper implements RowMapper
 {
     public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Customer customer = new Customer();
-        customer.setCustId(rs.getInt("CUST_ID"));
-        customer.setName(rs.getString("NAME"));
-        customer.setAge(rs.getInt("AGE"));
-        customer.setInsertionTime(ZonedDateTime.from(rs.getTimestamp("INSERT_TIME").toInstant().atZone(ZoneId.systemDefault())));
+        Customer customer = new Customer.CustomerBuilder().
+        setName(rs.getString("NAME")).
+        setAge(rs.getInt("AGE")).
+        setInsertTime(ZonedDateTime.from(rs.getTimestamp("INSERT_TIME").toInstant().atZone(ZoneId.systemDefault()))).build();
         return customer;
     }
 
@@ -81,12 +80,11 @@ public class JDBCCustomerDao implements CustomerDao{
                 ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
 
-                    customer = new Customer(
-                            rs.getLong("CUST_ID"),
-                            rs.getString("NAME"),
-                            rs.getInt("Age"),
-                            ZonedDateTime.from(rs.getTimestamp("INSERT_TIME").toInstant().atZone(ZoneId.systemDefault()))
-                    );
+                    customer = new Customer.CustomerBuilder()
+                            .setName(rs.getString("NAME"))
+                            .setAge(rs.getInt("Age"))
+                            .setInsertTime(ZonedDateTime.from(rs.getTimestamp("INSERT_TIME").toInstant().atZone(ZoneId.systemDefault())))
+                            .build();
                 }
                 rs.close();
                 ps.close();
