@@ -13,17 +13,17 @@ public final class Customer implements Comparable<Customer>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CUST_ID")
-    private Long custId;
+    private final Long custId;
 
     @Column(name = "NAME")
-    private String name;
+    private final String name;
 
     @Column(name = "AGE")
-    private Integer age;
+    private final Integer age;
 
     @Column(name = "INSERT_TIME")
     //@Temporal(TemporalType.TIMESTAMP)
-    private ZonedDateTime insertionTime ;
+    private final ZonedDateTime insertionTime ;
 
     @Override
     public String toString() {
@@ -41,14 +41,17 @@ public final class Customer implements Comparable<Customer>{
 
 
     private Customer(String name, Integer age, ZonedDateTime insertionTime){
-        //this.custId = custId;
+        this.custId = null;
         this.name = name;
         this.age = age;
         this.insertionTime = insertionTime;
     }
 
     private Customer(){
-
+        this.name = "";
+        this.age = -1;
+        this.insertionTime = ZonedDateTime.now();
+        this.custId=null;
     }
 
     public long getCustId() {

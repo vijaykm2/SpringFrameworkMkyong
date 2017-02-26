@@ -63,7 +63,7 @@ public class App {
         Path p = Paths.get("/home/vijay/IdeaProjects/Java8WebApp/note");
         String contents = new String(Files.readAllBytes(new File("note").toPath()), StandardCharsets.UTF_8);
         List<String> words = Arrays.asList(contents.split(" "));
-        Stream wordStream = words.stream().map(w -> w.toLowerCase()).distinct().limit(1000l).parallel();
+        Stream wordStream = words.stream().map(w -> w.toLowerCase()).distinct().parallel();
          start = Instant.now();
          List<Customer> customers = new ArrayList<>();
         wordStream.forEach(word -> {
