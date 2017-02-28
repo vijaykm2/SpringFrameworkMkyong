@@ -1,8 +1,8 @@
 package com.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -10,14 +10,29 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "RESERVATION")
-public class Reservation implements Comparable<Reservation>{
+public class Reservation implements BaseEntity, Comparable<Reservation>{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private Long id;
+
+    @Column(name = "RESERVATION_ID", unique = true, nullable = false)
     private String reservationId;
+
+    @Column(name = "CREATED_TIME")
     private ZonedDateTime createdTime;
+
+    @Column(name = "LAST_MODIFIED_TIME")
     private ZonedDateTime lastModifiedTime;
+
+    @Column(name = "ARRIVAL")
     private String arrival;
+
+    @Column(name = "DEPARTURE")
     private String departure;
-    private Set<Passengers> passengers;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reservation")
+    private Set<Passengers> passengers = new HashSet<Passengers>();
 
     private Reservation(String reservationId, ZonedDateTime createdTime, ZonedDateTime lastModifiedTime, String arrival, String departure, Set<Passengers> passengers) {
         this.id = null;
@@ -26,7 +41,7 @@ public class Reservation implements Comparable<Reservation>{
         this.lastModifiedTime = lastModifiedTime;
         this.arrival = arrival;
         this.departure = departure;
-        this.passengers = passengers;
+        this.passengers = passengers == null ? new HashSet<>() :  passengers;
     }
 
     private Reservation() {
@@ -83,7 +98,7 @@ public class Reservation implements Comparable<Reservation>{
             return false;
         if (arrival != null ? !arrival.equals(that.arrival) : that.arrival != null) return false;
         if (departure != null ? !departure.equals(that.departure) : that.departure != null) return false;
-        return passengers != null ? passengers.equals(that.passengers) : that.passengers == null;
+        return true;
     }
 
     @Override
@@ -94,7 +109,7 @@ public class Reservation implements Comparable<Reservation>{
         result = 31 * result + (lastModifiedTime != null ? lastModifiedTime.hashCode() : 0);
         result = 31 * result + (arrival != null ? arrival.hashCode() : 0);
         result = 31 * result + (departure != null ? departure.hashCode() : 0);
-        result = 31 * result + (passengers != null ? passengers.hashCode() : 0);
+        //result = 31 * result + (passengers != null || passengers.size() > 0 ? passengers.hashCode() : 0);
         return result;
     }
 
@@ -107,7 +122,7 @@ public class Reservation implements Comparable<Reservation>{
                 ", lastModifiedTime=" + lastModifiedTime +
                 ", arrival='" + arrival + '\'' +
                 ", departure='" + departure + '\'' +
-                ", passengers=" + passengers +
+                //", passengers=" + passengers +
                 '}';
     }
 

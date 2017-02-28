@@ -1,10 +1,12 @@
 package com.configuration;
 
 import com.CustomerBo;
-import com.dao.CustomerDao;
-import com.dao.HibernateCustomerDao;
-import com.dao.JDBCCustomerDao;
+import com.dao.*;
 import com.model.Customer;
+import com.model.Passengers;
+import com.model.Reservation;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor;
@@ -44,13 +46,23 @@ public class CustomerConfig {
                                   @Value("${jdbc.url}") String jdbcUrl,
                                   @Value("${jdbc.username}") String user,
                                   @Value("${jdbc.password}") String password ){
-        BasicDataSource driverManagerDataSource = new BasicDataSource();
-        driverManagerDataSource.setDriverClassName(driverClass);
-        driverManagerDataSource.setUrl(jdbcUrl);
-        driverManagerDataSource.setPassword(password);
-        driverManagerDataSource.setUsername(user);
-        System.out.println(driverManagerDataSource.getUrl() + ' '+ driverManagerDataSource.getPassword()+' '+ driverManagerDataSource.getUsername());
-        return driverManagerDataSource;
+        HikariConfig hikariConfig = new HikariConfig();
+        ///hikariConfig.setDriverClassName(driverClass);
+        hikariConfig.setJdbcUrl(jdbcUrl);
+        hikariConfig.setUsername(user);
+        hikariConfig.setPassword(password);
+
+        hikariConfig.setMaximumPoolSize(5);
+        hikariConfig.setConnectionTestQuery("SELECT 1");
+        hikariConfig.setPoolName("springHikariCP");
+
+        hikariConfig.addDataSourceProperty("dataSource.cachePrepStmts", "true");
+        hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSize", "250");
+        hikariConfig.addDataSourceProperty("dataSource.prepStmtCacheSqlLimit", "2048");
+        hikariConfig.addDataSourceProperty("dataSource.useServerPrepStmts", "true");
+
+        HikariDataSource dataSource = new HikariDataSource(hikariConfig);
+        return dataSource;
     }
 
 
@@ -89,16 +101,19 @@ public class CustomerConfig {
     public SessionFactory sessionFactory(@Value("#{dataSource}") DataSource dataSource,
                                          @Value("${hibernate.show_sql}") String showSql,
                                          @Value("${hibernate.dialect}") String dialect,
-                                         @Value("${hibernate.format_sql}") String formatSql){
+                                         @Value("${hibernate.format_sql}") String formatSql,
+                                         @Value("${hibernate.hbm2ddl}") String hbm2ddl){
         LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
         LocalSessionFactoryBuilder sessionBuilder = new LocalSessionFactoryBuilder(dataSource);
         //sessionBuilder.setDataSource(dataSource);
         sessionBuilder.addAnnotatedClasses(Customer.class);
+        sessionBuilder.addAnnotatedClasses(Reservation.class);
+        sessionBuilder.addAnnotatedClasses(Passengers.class);
         Properties hibernateProperties = new Properties();
         hibernateProperties.put("hibernate.dialect", dialect);
         hibernateProperties.put("hibernate.show_sql", showSql);
         hibernateProperties.put("hibernate.format_sql", formatSql);
-        //sessionBuilder.a
+        hibernateProperties.put("hibernate.hbm2ddl.auto", hbm2ddl);
         sessionBuilder.addProperties(hibernateProperties);
         SessionFactory factory = sessionBuilder.buildSessionFactory();
         return factory;
@@ -120,5 +135,15 @@ public class CustomerConfig {
         customerDao.setSessionFactory(sessionFactory);
         //customerDao.setTransactionManager(htm);
         return customerDao;
+    }
+
+    @Bean(name = "reservationDao")
+    public ReservationDao reservationDao(@Value("#{sessionFactory}")SessionFactory sessionFactory){
+       return new ReservationDao(sessionFactory);
+    }
+
+    @Bean(name = "passengerDao")
+    public PassengerDao passengerDao(@Value("#{sessionFactory}")SessionFactory sessionFactory){
+        return new PassengerDao(sessionFactory);
     }
 }

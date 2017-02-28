@@ -1,7 +1,6 @@
 package com.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -9,18 +8,42 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "PASSENGERS")
-public class Passengers implements Comparable<Passengers> {
+public class Passengers implements BaseEntity, Comparable<Passengers> {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
     private final Long id;
+
+    @Column(name = "FIRST_NAME")
     private final String firstName;
+
+    @Column(name = "LAST_NAME")
     private final String lastName;
+
+    @Column(name = "DATE_OF_BIRTH")
     private final LocalDate dob;
+
+    @Column(name = "GENDER")
     private final String gender;
+
+    @Column(name = "ADDRESS_LINE_1")
     private final String addressLine1;
+
+    @Column(name = "ADDRESS_LINE_2")
     private final String addressLine2;
+
+    @Column(name = "STATE")
     private final String state;
+
+    @Column(name = "COUNTRY")
     private final String country;
+
+    @Column(name = "ZIP_CODE")
     private final String zipCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn (name = "RESERVATION")
     private final Reservation reservation;
 
 

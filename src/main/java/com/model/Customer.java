@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
  */
 @Entity
 @Table(name = "customer")
-public final class Customer implements Comparable<Customer>{
+public final class Customer implements Comparable<Customer>, BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CUST_ID")

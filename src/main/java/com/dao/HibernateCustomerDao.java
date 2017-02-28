@@ -46,7 +46,7 @@ public class HibernateCustomerDao implements CustomerDao {
     @Override
     public Customer findCustomerById(String name) {
 
-        Session session = sessionFactory.openSession();
+        Session session = sessionFactory.getCurrentSession();
 
         Query<Customer> query = session.createQuery("from Customer where name = :name", Customer.class);
         query.setParameter("name", name);
