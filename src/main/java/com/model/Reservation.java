@@ -2,6 +2,8 @@ package com.model;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,10 +33,17 @@ public class Reservation implements BaseEntity, Comparable<Reservation>{
     @Column(name = "DEPARTURE")
     private String departure;
 
+    @Column(name = "DEPARTURE_DATE_TIME")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Calendar departureDateTime;
+
+    @Column (name = "ARRIVAL_DATE_TIME")
+    private Calendar arrivalDateTime;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reservation")
     private Set<Passengers> passengers = new HashSet<Passengers>();
 
-    private Reservation(String reservationId, ZonedDateTime createdTime, ZonedDateTime lastModifiedTime, String arrival, String departure, Set<Passengers> passengers) {
+    private Reservation(String reservationId, ZonedDateTime createdTime, ZonedDateTime lastModifiedTime, String arrival, String departure, Set<Passengers> passengers, Calendar departureDateTime, Calendar arrivalDateTime) {
         this.id = null;
         this.reservationId = reservationId;
         this.createdTime = createdTime;
@@ -42,6 +51,8 @@ public class Reservation implements BaseEntity, Comparable<Reservation>{
         this.arrival = arrival;
         this.departure = departure;
         this.passengers = passengers == null ? new HashSet<>() :  passengers;
+        this.arrivalDateTime = arrivalDateTime;
+        this.departureDateTime = departureDateTime;
     }
 
     private Reservation() {
@@ -98,7 +109,7 @@ public class Reservation implements BaseEntity, Comparable<Reservation>{
             return false;
         if (arrival != null ? !arrival.equals(that.arrival) : that.arrival != null) return false;
         if (departure != null ? !departure.equals(that.departure) : that.departure != null) return false;
-        return true;
+        return passengers != null && ((Reservation) o).passengers!= null && passengers.size() ==((Reservation) o).passengers.size() && passengers.containsAll(((Reservation) o).passengers) ;
     }
 
     @Override
@@ -109,7 +120,7 @@ public class Reservation implements BaseEntity, Comparable<Reservation>{
         result = 31 * result + (lastModifiedTime != null ? lastModifiedTime.hashCode() : 0);
         result = 31 * result + (arrival != null ? arrival.hashCode() : 0);
         result = 31 * result + (departure != null ? departure.hashCode() : 0);
-        //result = 31 * result + (passengers != null || passengers.size() > 0 ? passengers.hashCode() : 0);
+        result = 31 * result + (passengers != null || passengers.size() > 0 ? passengers.hashCode() : 0);
         return result;
     }
 
@@ -122,7 +133,9 @@ public class Reservation implements BaseEntity, Comparable<Reservation>{
                 ", lastModifiedTime=" + lastModifiedTime +
                 ", arrival='" + arrival + '\'' +
                 ", departure='" + departure + '\'' +
-                //", passengers=" + passengers +
+                ", passengers=" + (passengers!= null && passengers.size() > 0 ? passengers : 0) +
+                ", departure date tieme= " + departureDateTime.toString()+
+                ", arrival date time = " + arrivalDateTime.toString() +
                 '}';
     }
 
@@ -140,6 +153,8 @@ public class Reservation implements BaseEntity, Comparable<Reservation>{
         private String arrival;
         private String departure;
         private Set<Passengers> passengers;
+        private GregorianCalendar arrivalDateTime;
+        private GregorianCalendar departureDateTime;
 
         public Builder setReservationId(String reservationId) {
             this.reservationId = reservationId;
@@ -171,8 +186,18 @@ public class Reservation implements BaseEntity, Comparable<Reservation>{
             return this;
         }
 
+        public Builder setArrivalDateTime(ZonedDateTime arrivalDateTime) {
+            this.arrivalDateTime = arrivalDateTime !=null ? GregorianCalendar.from(arrivalDateTime) : null;
+            return this;
+        }
+
+        public Builder setDepartureDateTime(ZonedDateTime departureDateTime) {
+            this.departureDateTime = departureDateTime != null ? GregorianCalendar.from(departureDateTime): null;
+            return this;
+        }
+
         public Reservation build(){
-            return new Reservation(reservationId, createdTime, lastModifiedTime, arrival, departure, passengers);
+            return new Reservation(reservationId, createdTime, lastModifiedTime, arrival, departure, passengers, departureDateTime, arrivalDateTime);
         }
     }
 }

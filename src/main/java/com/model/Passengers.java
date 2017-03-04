@@ -136,7 +136,7 @@ public class Passengers implements BaseEntity, Comparable<Passengers> {
         if (state != null ? !state.equals(that.state) : that.state != null) return false;
         if (country != null ? !country.equals(that.country) : that.country != null) return false;
         if (zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null) return false;
-        return reservation != null ? reservation.equals(that.reservation) : that.reservation == null;
+        return true;
     }
 
     @Override
@@ -151,7 +151,7 @@ public class Passengers implements BaseEntity, Comparable<Passengers> {
         result = 31 * result + (state != null ? state.hashCode() : 0);
         result = 31 * result + (country != null ? country.hashCode() : 0);
         result = 31 * result + (zipCode != null ? zipCode.hashCode() : 0);
-        result = 31 * result + (reservation != null ? reservation.hashCode() : 0);
+        //result = 31 * result + (reservation != null ? reservation.hashCode() : 0);
         return result;
     }
 
@@ -167,8 +167,7 @@ public class Passengers implements BaseEntity, Comparable<Passengers> {
                 ", addressLine2='" + addressLine2 + '\'' +
                 ", state='" + state + '\'' +
                 ", country='" + country + '\'' +
-                ", zipCode='" + zipCode + '\'' +
-                ", reservation=" + reservation +
+                ", zipCode='" + zipCode +
                 '}';
     }
 

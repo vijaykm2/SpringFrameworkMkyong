@@ -12,6 +12,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +46,12 @@ public class ReservationDaoTest {
 
 
 
-        Reservation reservation = new Reservation.Builder().setReservationId(getReservationId()).setArrival("DFW").setDeparture("EWR").setCreatedTime(ZonedDateTime.now()).setLastModifiedTime(ZonedDateTime.now()).build();
+        Reservation reservation = new Reservation.Builder().setReservationId(getReservationId())
+                .setArrival("DFW").setDeparture("EWR").setCreatedTime(ZonedDateTime.now())
+                .setLastModifiedTime(ZonedDateTime.now())
+                .setDepartureDateTime(ZonedDateTime.of(LocalDateTime.of(2017, 8, 8, 11, 30, 00), ZoneId.of(ZoneId.SHORT_IDS.get("CST"))))
+                .setArrivalDateTime(ZonedDateTime.of(LocalDateTime.of(2017, 10, 10, 10, 10, 00), ZoneId.of(ZoneId.SHORT_IDS.get("EST"))))
+                .build();
         reservationDao.insert(reservation);
         Passengers pax1 = new Passengers.Builder().setFirstName("Vijay")
                 .setLastName("KM")

@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.vijay</groupId>
   <artifactId>SpringFrameworkMkyong</artifactId>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>SpringFrameworkMkyong Maven Webapp</name>
   <url>http://maven.apache.org</url>
@@ -49,11 +49,7 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-frontend-jaxrs</artifactId>
-      <version>3.0.0-milestone1</version>
-    </dependency>
+
     <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
     <dependency>
       <groupId>com.zaxxer</groupId>

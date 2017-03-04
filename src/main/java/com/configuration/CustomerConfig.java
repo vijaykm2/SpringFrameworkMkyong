@@ -47,7 +47,7 @@ public class CustomerConfig {
                                   @Value("${jdbc.username}") String user,
                                   @Value("${jdbc.password}") String password ){
         HikariConfig hikariConfig = new HikariConfig();
-        ///hikariConfig.setDriverClassName(driverClass);
+        hikariConfig.setDriverClassName(driverClass);
         hikariConfig.setJdbcUrl(jdbcUrl);
         hikariConfig.setUsername(user);
         hikariConfig.setPassword(password);
